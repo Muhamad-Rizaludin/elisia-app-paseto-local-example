@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: elisia-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: elisia_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elisia-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    env_file:
+      - .env.development
+    ports:
+      - "3000:3000"
+    command: bun run dev
+
+volumes:
+  postgres_data:

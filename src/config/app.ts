@@ -64,6 +64,8 @@ export const createApp = () => {
     });
   }
 
+  app.get("/", () => "Service is running");
+
   app.use(appRoutes);
 
   return app;

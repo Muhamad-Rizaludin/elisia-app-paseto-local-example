@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: elisia_dev
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: aulia1234
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -24,9 +24,12 @@ services:
       - postgres
     env_file:
       - .env.development
+    environment:
+      DB_HOST: postgres
     ports:
-      - "3000:3000"
-    command: bun run dev
+      - "5000:5000"
+    volumes:
+      - ./logs:/app/logs
 
 volumes:
   postgres_data:

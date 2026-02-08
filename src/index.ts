@@ -10,7 +10,7 @@ const { logger } = await import("@config/logger");
 await bootstrapDatabase();
 
 const app = createApp();
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 5000);
 
 app.listen(port);
 

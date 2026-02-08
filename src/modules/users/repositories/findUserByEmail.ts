@@ -10,9 +10,9 @@ export const findUserByEmail = (
 	const where = includeDeleted
 		? { email }
 		: {
-				email,
-				deleted: DeletedStatus.FALSE
-		  };
+			email,
+			deleted: DeletedStatus.FALSE
+		};
 
 	return User.findOne({
 		where

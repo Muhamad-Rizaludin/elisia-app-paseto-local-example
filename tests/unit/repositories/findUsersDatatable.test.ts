@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { findUsersDatatable } from "@modules/users/repositories/findUsersDatatable";
+import { DeletedStatus } from "@plugins/common/types";
 
 describe("findUsersDatatable repository", () => {
   it("builds search query and delegates to model", async () => {
@@ -30,5 +31,6 @@ describe("findUsersDatatable repository", () => {
     expect(capturedPayload.limit).toBe(10);
     expect(capturedPayload.offset).toBe(0);
     expect(capturedPayload.where).toBeDefined();
+    expect((capturedPayload.where as { deleted?: number }).deleted).toBe(DeletedStatus.FALSE);
   });
 });

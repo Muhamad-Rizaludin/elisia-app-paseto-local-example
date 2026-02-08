@@ -1,7 +1,21 @@
 import { Role, User } from "@schemas/models";
+import { DeletedStatus } from "@plugins/common/types";
 
-export const findUserByEmail = (email: string) =>
-  User.findOne({
-    where: { email },
+export const findUserByEmail = (
+  email: string,
+  options?: { includeDeleted?: boolean }
+) => {
+  const includeDeleted = options?.includeDeleted === true;
+
+  const where = includeDeleted
+    ? { email }
+    : {
+      email,
+      deleted: DeletedStatus.FALSE
+    };
+
+  return User.findOne({
+    where,
     include: [{ model: Role, as: "role", attributes: ["id", "name"] }]
   });
+};

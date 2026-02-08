@@ -6,6 +6,7 @@ export class User extends Model {
   declare name: string;
   declare email: string;
   declare passwordHash: string;
+  declare deleted: number;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -36,6 +37,11 @@ export const initializeUserModel = (sequelize: Sequelize) => {
         type: DataTypes.STRING(255),
         allowNull: false,
         field: "password_hash"
+      },
+      deleted: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
       },
       createdAt: {
         type: DataTypes.DATE,

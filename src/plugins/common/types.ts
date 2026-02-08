@@ -7,6 +7,11 @@ export type DatatableMeta = {
   hasPrev: boolean;
 };
 
+export enum DeletedStatus {
+  FALSE = 0,
+  TRUE = 1
+}
+
 export type BaseResponse<T> = {
   status: number;
   success: boolean;
@@ -47,7 +52,23 @@ export type BodyRequestSetContext = {
   set: HttpSet;
 };
 
+export type BodyRequestContext = {
+  body: unknown;
+  request: Request;
+};
+
 export type RequestQueryContext = {
   request: Request;
   query: Record<string, unknown>;
+};
+
+export type RequestParamsContext = {
+  request: Request;
+  params: Record<string, string>;
+};
+
+export type BodyRequestParamsContext = {
+  request: Request;
+  params: Record<string, string>;
+  body: unknown;
 };

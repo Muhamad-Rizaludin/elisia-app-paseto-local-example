@@ -13,7 +13,7 @@ export const registerUser = async (payload: RegisterRequest, deps = authReposito
     throw notFoundError("Default role not found");
   }
 
-  const existingUser = await deps.findUserByEmail(payload.email);
+  const existingUser = await deps.findUserByEmail(payload.email, { includeDeleted: true });
   if (existingUser) {
     throw conflictError("Email already registered");
   }

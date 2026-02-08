@@ -15,7 +15,7 @@ export const usersDeleteEndpoint = new Elysia().delete("/:id", async ({ request,
     throw forbiddenError("Only admin can delete users");
   }
 
-  const validatedParams = await validateYup<UserIdParams>(userIdParamValidator, params);
+  const validatedParams = await validateYup<UserIdParams>(userIdParamValidator, { id: params.id });
   return usersDeleteController(validatedParams.id);
 }, {
   detail: {

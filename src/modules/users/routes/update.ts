@@ -16,7 +16,7 @@ export const usersUpdateEndpoint = new Elysia().patch("/:id", async ({ request, 
     throw forbiddenError("Only admin can update users");
   }
 
-  const validatedParams = await validateYup<UserIdParams>(userIdParamValidator, params);
+  const validatedParams = await validateYup<UserIdParams>(userIdParamValidator, { id: params.id });
   const payload = await validateYup<UpdateUserRequest>(usersUpdateValidator, body);
   return usersUpdateController(validatedParams.id, payload);
 }, {

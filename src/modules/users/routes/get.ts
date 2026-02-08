@@ -15,7 +15,7 @@ export const usersGetEndpoint = new Elysia().get("/:id", async ({ request, param
     throw forbiddenError("Only admin can access user detail");
   }
 
-  const validatedParams = await validateYup<UserIdParams>(userIdParamValidator, params);
+  const validatedParams = await validateYup<UserIdParams>(userIdParamValidator, { id: params.id });
   return usersGetController(validatedParams.id);
 }, {
   detail: {

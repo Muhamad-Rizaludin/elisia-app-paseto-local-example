@@ -4,6 +4,7 @@ Backend API production-ready berbasis Bun + TypeScript + Elysia.js dengan Postgr
 
 ## Stack
 - Bun runtime + package manager
+- Node.js 22 (untuk tooling/compatibility saat diperlukan)
 - TypeScript (strict)
 - Elysia.js
 - PostgreSQL
@@ -37,127 +38,48 @@ Backend API production-ready berbasis Bun + TypeScript + Elysia.js dengan Postgr
 ## Struktur Folder
 ```text
 .
-├── Dockerfile
-├── docker-compose.yml
-├── sequelize.config.js
 ├── package.json
 ├── tsconfig.json
-├── migrations
-│   ├── 20260207010000-create-roles.js
-│   ├── 20260207010100-create-users.js
-│   └── 20260207010200-create-refresh-tokens.js
-├── seeders
-│   ├── 20260207010300-seed-roles.js
-│   └── 20260207010400-seed-admin-user.js
-├── src
+├── sequelize.config.js
+├── docker-compose.yml
+├── Dockerfile
+├── migrations/          # Database migrations
+├── seeders/             # Database seeders
+├── src/
 │   ├── index.ts
-│   ├── common
-│   │   ├── BaseError.ts
-│   │   └── errorFactory.ts
-│   ├── config
-│   │   ├── app.ts
-│   │   ├── bootstrap.ts
-│   │   ├── database.ts
-│   │   └── logger.ts
-│   ├── middlewares
-│   │   ├── errorHandler.ts
-│   │   ├── rateLimit.ts
-│   │   └── requireAuth.ts
-│   ├── plugins
-│   │   ├── auth
-│   │   │   ├── enums.ts
-│   │   │   └── types.ts
-│   │   ├── common
-│   │   │   └── types.ts
-│   │   ├── errors
-│   │   │   └── enums.ts
-│   │   └── users
-│   │       └── types.ts
-│   ├── relations
-│   │   ├── auth
-│   │   │   ├── userRefreshToken.ts
-│   │   │   └── userRole.ts
-│   │   └── index.ts
-│   ├── repositories
-│   │   ├── auth
-│   │   │   ├── createRefreshToken.ts
-│   │   │   ├── createUser.ts
-│   │   │   ├── findRefreshTokenByTokenId.ts
-│   │   │   ├── findRoleByName.ts
-│   │   │   ├── findUserByEmail.ts
-│   │   │   ├── findUserById.ts
-│   │   │   ├── index.ts
-│   │   │   ├── revokeRefreshTokenByTokenId.ts
-│   │   │   └── revokeRefreshTokensByUserId.ts
-│   │   └── users
-│   │       ├── findUsersDatatable.ts
-│   │       └── index.ts
-│   ├── routes
-│   │   ├── index.ts
-│   │   └── v1
-│   │       ├── auth
-│   │       │   ├── index.ts
-│   │       │   ├── login.ts
-│   │       │   ├── logout.ts
-│   │       │   ├── me.ts
-│   │       │   ├── refresh.ts
-│   │       │   └── register.ts
-│   │       ├── health
-│   │       │   ├── get.ts
-│   │       │   └── index.ts
-│   │       ├── index.ts
-│   │       └── users
-│   │           ├── index.ts
-│   │           └── list.ts
-│   ├── schemas
-│   │   └── models
-│   │       ├── RefreshToken.ts
-│   │       ├── Role.ts
-│   │       ├── User.ts
-│   │       └── index.ts
-│   ├── services
-│   │   ├── auth
-│   │   │   ├── getMe.ts
-│   │   │   ├── loginUser.ts
-│   │   │   ├── logoutUser.ts
-│   │   │   ├── refreshSession.ts
-│   │   │   └── registerUser.ts
-│   │   └── users
-│   │       └── getUsersDatatable.ts
-│   ├── utils
-│   │   ├── authSession.ts
-│   │   ├── cookies.ts
-│   │   ├── duration.ts
-│   │   ├── hash.ts
-│   │   ├── pagination.ts
-│   │   ├── rateLimitStore.ts
-│   │   ├── response.ts
-│   │   ├── token.ts
-│   │   ├── user.ts
-│   │   └── validateYup.ts
-│   └── validators
-│       ├── auth
-│       │   ├── login.ts
-│       │   ├── refresh.ts
-│       │   └── register.ts
-│       └── users
-│           └── list.ts
-└── tests
-    ├── integration
-    │   └── auth-flow.test.ts
-    └── unit
-        ├── repositories
-        │   └── findUsersDatatable.test.ts
-        ├── services
-        │   └── registerUser.test.ts
-        └── utils
-            └── pagination.test.ts
+│   ├── common/          # Shared utilities (BaseError, errorFactory)
+│   ├── config/          # App configuration (app, database, logger, bootstrap)
+│   ├── middlewares/     # Global middlewares (errorHandler, rateLimit, requireAuth)
+│   ├── modules/         # Feature-based modules
+│   │   ├── auth/        # Authentication feature
+│   │   │   ├── controllers/
+│   │   │   ├── repositories/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   ├── types/
+│   │   │   ├── validators/
+│   │   │   └── relations/
+│   │   ├── users/       # User management feature
+│   │   └── health/      # Health check feature
+│   ├── plugins/         # Elysia plugins
+│   ├── routes/          # Route orchestration (v1/index.ts)
+│   ├── schemas/         # Database models (RefreshToken, Role, User)
+│   ├── relations/       # Sequelize associations
+│   └── utils/           # Utility functions (token, hash, pagination, response, dll)
+└── tests/               # Test suite (unit & integration)
 ```
 
-Struktur feature-first utama berada di:
-- `src/modules/auth/{routes,controllers,services,repositories,validators,types,relations}`
-- `src/modules/users/{routes,controllers,services,repositories,validators,types}`
-- `src/modules/health/{routes,controllers}`
+### Architecture Pattern
+Flow endpoint: `route -> controller -> service -> repository`
+
+Setiap module menggunakan struktur yang konsisten:
+- **controllers/** - Handle HTTP request/response
+- **services/** - Business logic layer (1 file = 1 function)
+- **repositories/** - Database access layer (1 file = 1 method)
+- **routes/** - Route definitions dengan middleware & validation
+- **types/** - TypeScript types & enums (module-specific)
+- **validators/** - Yup validation schemas
+- **relations/** - Sequelize associations (auth module)
 
 ## Environment
 File environment tersedia:

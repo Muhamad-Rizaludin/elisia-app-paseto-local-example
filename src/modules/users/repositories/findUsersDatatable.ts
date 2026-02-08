@@ -1,19 +1,23 @@
 import { Op } from "sequelize";
 import { Role, User } from "@schemas/models";
+import { DeletedStatus } from "@plugins/common/types";
 import type { FindUsersDatatableDependencies, FindUsersDatatableParams } from "@modules/users/types/types";
 
 export const findUsersDatatable = (
   { limit, offset, search }: FindUsersDatatableParams,
   deps: FindUsersDatatableDependencies = { userModel: User }
 ) => {
-  const where = search
-    ? {
-        [Op.or]: [
-          { name: { [Op.iLike]: `%${search}%` } },
-          { email: { [Op.iLike]: `%${search}%` } }
-        ]
-      }
-    : undefined;
+  const where = {
+    deleted: DeletedStatus.FALSE,
+    ...(search
+      ? {
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${search}%` } },
+            { email: { [Op.iLike]: `%${search}%` } }
+          ]
+        }
+      : {})
+  };
 
   return deps.userModel.findAndCountAll({
     where,

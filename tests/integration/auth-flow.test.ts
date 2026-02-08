@@ -70,7 +70,7 @@ beforeAll(async () => {
     port: Number(process.env.DB_PORT || 5432),
     database: process.env.DB_NAME || "elisia_test",
     username: process.env.DB_USER || "postgres",
-    password: process.env.DB_PASS || "postgres",
+    password: process.env.DB_PASS || "",
     logging: false
   });
 
@@ -83,6 +83,7 @@ beforeAll(async () => {
   await runMigration("../../migrations/20260207010000-create-roles.js", queryInterface);
   await runMigration("../../migrations/20260207010100-create-users.js", queryInterface);
   await runMigration("../../migrations/20260207010200-create-refresh-tokens.js", queryInterface);
+  await runMigration("../../migrations/20260208090000-add-deleted-to-users.js", queryInterface);
 
   await runSeeder("../../seeders/20260207010300-seed-roles.js", queryInterface);
   await runSeeder("../../seeders/20260207010400-seed-admin-user.js", queryInterface);
@@ -95,13 +96,13 @@ beforeAll(async () => {
 
   const appModule = await import("@config/app");
   app = appModule.createApp();
-});
+}, 20000);
 
 afterAll(async () => {
   if (closeDatabase) {
     await closeDatabase();
   }
-});
+}, 20000);
 
 describe("integration auth flow", () => {
   it("runs register -> me -> validation -> admin users list -> refresh", async () => {
@@ -135,5 +136,52 @@ describe("integration auth flow", () => {
 
     const refreshResponse = await callApi("/api/v1/auth/refresh", "POST", undefined, adminCookies);
     expect(refreshResponse.status).toBe(200);
+  });
+
+  it("runs users CRUD flow", async () => {
+    const adminLoginResponse = await callApi("/api/v1/auth/login", "POST", {
+      email: "admin@example.com",
+      password: "Admin12345!"
+    });
+    expect(adminLoginResponse.status).toBe(200);
+    const adminCookies = parseAuthCookies(adminLoginResponse);
+
+    const unique = Date.now();
+    const createResponse = await callApi(
+      "/api/v1/users",
+      "POST",
+      {
+        name: `User ${unique}`,
+        email: `user${unique}@example.com`,
+        password: "Password123!",
+        role: "user"
+      },
+      adminCookies
+    );
+
+    expect(createResponse.status).toBe(200);
+    const created = await createResponse.json();
+    const userId = created?.data?.id as number;
+    expect(userId).toBeGreaterThan(0);
+
+    const getResponse = await callApi(`/api/v1/users/${userId}`, "GET", undefined, adminCookies);
+    expect(getResponse.status).toBe(200);
+
+    const updateResponse = await callApi(
+      `/api/v1/users/${userId}`,
+      "PATCH",
+      {
+        name: `User Updated ${unique}`,
+        email: `user${unique}.updated@example.com`
+      },
+      adminCookies
+    );
+    expect(updateResponse.status).toBe(200);
+
+    const deleteResponse = await callApi(`/api/v1/users/${userId}`, "DELETE", undefined, adminCookies);
+    expect(deleteResponse.status).toBe(200);
+
+    const getAfterDeleteResponse = await callApi(`/api/v1/users/${userId}`, "GET", undefined, adminCookies);
+    expect(getAfterDeleteResponse.status).toBe(404);
   });
 });

@@ -11,7 +11,7 @@ export const updateUser = async (id: number, payload: UpdateUserRequest, deps = 
   }
 
   if (payload.email && payload.email !== existingUser.email) {
-    const emailTaken = await deps.findUserByEmail(payload.email);
+    const emailTaken = await deps.findUserByEmail(payload.email, { includeDeleted: true });
     if (emailTaken) {
       throw conflictError("Email already registered");
     }

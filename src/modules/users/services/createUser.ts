@@ -13,7 +13,7 @@ export const createUser = async (payload: CreateUserRequest, deps = usersReposit
     throw notFoundError("Role not found");
   }
 
-  const existingUser = await deps.findUserByEmail(payload.email);
+  const existingUser = await deps.findUserByEmail(payload.email, { includeDeleted: true });
   if (existingUser) {
     throw conflictError("Email already registered");
   }

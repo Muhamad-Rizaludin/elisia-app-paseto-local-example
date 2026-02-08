@@ -1,3 +1,5 @@
+import type { RoleName } from "@modules/auth/types/enums";
+
 export type UserDatatableQuery = {
   page?: number;
   pageSize?: number;
@@ -12,14 +14,14 @@ export type CreateUserRequest = {
   name: string;
   email: string;
   password: string;
-  role?: string;
+  role?: RoleName;
 };
 
 export type UpdateUserRequest = {
   name?: string;
   email?: string;
   password?: string;
-  role?: string;
+  role?: RoleName;
 };
 
 export type UserItem = {

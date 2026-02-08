@@ -28,7 +28,7 @@ export const refreshSession = async (refreshToken: string, deps = authRepository
 
   await deps.revokeRefreshTokenByTokenId(payload.jti);
 
-  const user = await deps.findUserById(Number(payload.sub));
+  const user = await deps.findUserById(payload.sub);
   if (!user) {
     throw unauthorizedError("User not found");
   }

@@ -1,8 +1,8 @@
 import { DataTypes, Model, type Sequelize } from "sequelize";
 
 export class RefreshToken extends Model {
-  declare id: number;
-  declare userId: number;
+  declare id: string;
+  declare userId: string;
   declare tokenId: string;
   declare tokenHash: string;
   declare isRevoked: boolean;
@@ -15,12 +15,12 @@ export const initializeRefreshTokenModel = (sequelize: Sequelize) => {
   RefreshToken.init(
     {
       id: {
-        type: DataTypes.BIGINT,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         field: "user_id"
       },

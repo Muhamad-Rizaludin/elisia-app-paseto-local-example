@@ -7,7 +7,7 @@ export type UserDatatableQuery = {
 };
 
 export type UserIdParams = {
-  id: number;
+  id: string;
 };
 
 export type CreateUserRequest = {
@@ -25,7 +25,7 @@ export type UpdateUserRequest = {
 };
 
 export type UserItem = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: string;
@@ -33,14 +33,14 @@ export type UserItem = {
 };
 
 export type CreateUserPayload = {
-  roleId: number;
+  roleId: string;
   name: string;
   email: string;
   passwordHash: string;
 };
 
 export type UpdateUserPayload = {
-  roleId: number;
+  roleId: string;
   name: string;
   email: string;
   passwordHash: string;

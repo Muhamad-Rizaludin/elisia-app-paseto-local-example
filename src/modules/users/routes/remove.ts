@@ -27,7 +27,7 @@ export const usersDeleteEndpoint = new Elysia().delete("/:id", async ({ request,
         name: "id",
         in: "path",
         required: true,
-        schema: { type: "integer", minimum: 1 },
+        schema: { type: "string", format: "uuid" },
         description: "User id"
       }
     ],

@@ -44,7 +44,7 @@ export const loginEndpoint = new Elysia().post("/login", async ({ body, request,
               message: "Login success",
               data: {
                 user: {
-                  id: 1,
+                  id: "11111111-1111-1111-1111-111111111111",
                   name: "System Admin",
                   email: "admin@example.com",
                   role: "admin"

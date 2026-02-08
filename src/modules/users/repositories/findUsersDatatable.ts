@@ -23,7 +23,7 @@ export const findUsersDatatable = (
     where,
     include: [{ model: Role, as: "role", attributes: ["id", "name"] }],
     attributes: ["id", "name", "email", "createdAt"],
-    order: [["id", "DESC"]],
+    order: [["createdAt", "DESC"]],
     limit,
     offset
   });

@@ -4,9 +4,9 @@ import { registerUser } from "@modules/auth/services/registerUser";
 describe("registerUser service", () => {
   it("throws conflict when email already exists", async () => {
     const deps = {
-      findRoleByName: async () => ({ id: 2, name: "user" }),
-      findUserByEmail: async () => ({ id: 10 }),
-      createUser: async () => ({ id: 11 }),
+      findRoleByName: async () => ({ id: "22222222-2222-2222-2222-222222222222", name: "user" }),
+      findUserByEmail: async () => ({ id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }),
+      createUser: async () => ({ id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" }),
       findUserById: async () => null,
       createRefreshToken: async () => ({})
     };
@@ -25,11 +25,11 @@ describe("registerUser service", () => {
 
   it("returns user and token when register success", async () => {
     const deps = {
-      findRoleByName: async () => ({ id: 2, name: "user" }),
+      findRoleByName: async () => ({ id: "22222222-2222-2222-2222-222222222222", name: "user" }),
       findUserByEmail: async () => null,
-      createUser: async () => ({ id: 20 }),
+      createUser: async () => ({ id: "cccccccc-cccc-cccc-cccc-cccccccccccc" }),
       findUserById: async () => ({
-        id: 20,
+        id: "cccccccc-cccc-cccc-cccc-cccccccccccc",
         name: "Budi",
         email: "budi@example.com",
         role: { name: "user" }

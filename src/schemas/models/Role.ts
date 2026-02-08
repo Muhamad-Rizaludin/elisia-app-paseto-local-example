@@ -1,7 +1,7 @@
 import { DataTypes, Model, type Sequelize } from "sequelize";
 
 export class Role extends Model {
-  declare id: number;
+  declare id: string;
   declare name: string;
   declare createdAt: Date;
   declare updatedAt: Date;
@@ -11,8 +11,8 @@ export const initializeRoleModel = (sequelize: Sequelize) => {
   Role.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       name: {

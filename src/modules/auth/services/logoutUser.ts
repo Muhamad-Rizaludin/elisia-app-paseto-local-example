@@ -15,7 +15,7 @@ export const logoutUser = async (payload: LogoutPayload, deps = authRepository) 
   if (payload.accessToken) {
     try {
       const accessPayload = await verifyAccessToken(payload.accessToken);
-      await deps.revokeRefreshTokensByUserId(Number(accessPayload.sub));
+      await deps.revokeRefreshTokensByUserId(accessPayload.sub);
     } catch {
       // Tetap lanjut agar logout idempotent.
     }

@@ -27,7 +27,7 @@ export const usersGetEndpoint = new Elysia().get("/:id", async ({ request, param
         name: "id",
         in: "path",
         required: true,
-        schema: { type: "integer", minimum: 1 },
+        schema: { type: "string", format: "uuid" },
         description: "User id"
       }
     ],
@@ -41,7 +41,7 @@ export const usersGetEndpoint = new Elysia().get("/:id", async ({ request, param
               success: true,
               message: "User retrieved",
               data: {
-                id: 1,
+                id: "11111111-1111-1111-1111-111111111111",
                 name: "System Admin",
                 email: "admin@example.com",
                 role: "admin",

@@ -1,7 +1,7 @@
 import { User } from "@schemas/models";
 import { DeletedStatus } from "@plugins/common/types";
 
-export const deleteUserById = async (id: number, deletedStatus = DeletedStatus.TRUE) => {
+export const deleteUserById = async (id: string, deletedStatus = DeletedStatus.TRUE) => {
 	const [affected] = await User.update(
 		{ deleted: deletedStatus },
 		{

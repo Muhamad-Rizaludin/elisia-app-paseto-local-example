@@ -4,14 +4,14 @@ import { durationToMs } from "@utils/duration";
 import { hashValue } from "@utils/hash";
 
 type SaveRefreshTokenFn = (payload: {
-  userId: number;
+  userId: string;
   tokenId: string;
   tokenHash: string;
   expiresAt: Date;
 }) => Promise<unknown>;
 
 export const issueAuthTokens = async (
-  user: { id: number; email: string; role: string },
+  user: { id: string; email: string; role: string },
   saveRefreshToken: SaveRefreshTokenFn,
   sessionExpiresAt?: Date
 ): Promise<AuthTokens> => {

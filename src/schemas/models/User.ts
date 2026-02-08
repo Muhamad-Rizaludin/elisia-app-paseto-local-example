@@ -1,8 +1,8 @@
 import { DataTypes, Model, type Sequelize } from "sequelize";
 
 export class User extends Model {
-  declare id: number;
-  declare roleId: number;
+  declare id: string;
+  declare roleId: string;
   declare name: string;
   declare email: string;
   declare passwordHash: string;
@@ -15,12 +15,12 @@ export const initializeUserModel = (sequelize: Sequelize) => {
   User.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
       roleId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         field: "role_id"
       },

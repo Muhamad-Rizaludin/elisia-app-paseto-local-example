@@ -36,7 +36,7 @@ export const registerEndpoint = new Elysia().post("/register", async ({ body, se
               message: "Register success",
               data: {
                 user: {
-                  id: 2,
+                  id: "22222222-2222-2222-2222-222222222222",
                   name: "Budi",
                   email: "budi@example.com",
                   role: "user"

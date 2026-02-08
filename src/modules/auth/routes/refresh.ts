@@ -52,7 +52,7 @@ export const refreshEndpoint = new Elysia().post("/refresh", async ({ body, requ
               message: "Token refreshed",
               data: {
                 user: {
-                  id: 1,
+                  id: "11111111-1111-1111-1111-111111111111",
                   name: "System Admin",
                   email: "admin@example.com",
                   role: "admin"

@@ -6,7 +6,7 @@ describe("createUser service", () => {
     const deps = {
       findRoleByName: async () => null,
       findUserByEmail: async () => null,
-      createUser: async () => ({ id: 1 }),
+      createUser: async () => ({ id: "11111111-1111-1111-1111-111111111111" }),
       findUserById: async () => null
     };
 
@@ -24,9 +24,9 @@ describe("createUser service", () => {
 
   it("throws when email already exists", async () => {
     const deps = {
-      findRoleByName: async () => ({ id: 2, name: "user" }),
-      findUserByEmail: async () => ({ id: 99 }),
-      createUser: async () => ({ id: 1 }),
+      findRoleByName: async () => ({ id: "22222222-2222-2222-2222-222222222222", name: "user" }),
+      findUserByEmail: async () => ({ id: "99999999-9999-9999-9999-999999999999" }),
+      createUser: async () => ({ id: "11111111-1111-1111-1111-111111111111" }),
       findUserById: async () => null
     };
 
@@ -44,11 +44,11 @@ describe("createUser service", () => {
 
   it("returns sanitized user on success", async () => {
     const deps = {
-      findRoleByName: async () => ({ id: 2, name: "user" }),
+      findRoleByName: async () => ({ id: "22222222-2222-2222-2222-222222222222", name: "user" }),
       findUserByEmail: async () => null,
-      createUser: async () => ({ id: 10 }),
+      createUser: async () => ({ id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }),
       findUserById: async () => ({
-        id: 10,
+        id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
         name: "Budi",
         email: "budi@example.com",
         role: { name: "user" },

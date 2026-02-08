@@ -35,7 +35,17 @@ export const createApp = () => {
       return mapped.body;
     });
 
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV === "production") {
+    app.get("/docs", ({ set }) => {
+      set.status = 404;
+      return errorResponse("Not found", 404);
+    });
+
+    app.get("/docs/json", ({ set }) => {
+      set.status = 404;
+      return errorResponse("Not found", 404);
+    });
+  } else {
     app.use(
       swagger({
         path: "/docs",
@@ -52,16 +62,6 @@ export const createApp = () => {
         }
       })
     );
-  } else {
-    app.get("/docs", ({ set }) => {
-      set.status = 404;
-      return errorResponse("Not found", 404);
-    });
-
-    app.get("/docs/json", ({ set }) => {
-      set.status = 404;
-      return errorResponse("Not found", 404);
-    });
   }
 
   app.get("/", () => "Service is running");

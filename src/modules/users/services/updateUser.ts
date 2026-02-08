@@ -4,7 +4,7 @@ import { usersRepository } from "@modules/users/repositories";
 import { hashValue } from "@utils/hash";
 import { sanitizeUser } from "@utils/user";
 
-export const updateUser = async (id: number, payload: UpdateUserRequest, deps = usersRepository) => {
+export const updateUser = async (id: string, payload: UpdateUserRequest, deps = usersRepository) => {
   const existingUser = await deps.findUserById(id);
   if (!existingUser) {
     throw notFoundError("User not found");

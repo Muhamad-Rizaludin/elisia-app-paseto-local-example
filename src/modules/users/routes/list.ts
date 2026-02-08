@@ -56,7 +56,7 @@ export const usersListEndpoint = new Elysia().get("/", async ({ request, query }
               message: "Users list retrieved",
               data: [
                 {
-                  id: 1,
+                  id: "11111111-1111-1111-1111-111111111111",
                   name: "System Admin",
                   email: "admin@example.com",
                   role: "admin",

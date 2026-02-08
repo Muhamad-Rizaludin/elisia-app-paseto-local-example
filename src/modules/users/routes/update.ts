@@ -29,7 +29,7 @@ export const usersUpdateEndpoint = new Elysia().patch("/:id", async ({ request, 
         name: "id",
         in: "path",
         required: true,
-        schema: { type: "integer", minimum: 1 },
+        schema: { type: "string", format: "uuid" },
         description: "User id"
       }
     ],

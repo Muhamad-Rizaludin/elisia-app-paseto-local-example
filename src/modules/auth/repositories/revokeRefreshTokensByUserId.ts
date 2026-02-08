@@ -1,6 +1,6 @@
 import { RefreshToken } from "@schemas/models";
 
-export const revokeRefreshTokensByUserId = (userId: number) =>
+export const revokeRefreshTokensByUserId = (userId: string) =>
   RefreshToken.update(
     { isRevoked: true },
     {

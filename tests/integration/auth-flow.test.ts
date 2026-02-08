@@ -24,34 +24,21 @@ const safeDropTable = async (queryInterface: QueryInterface, tableName: string) 
   }
 };
 
-const parseAuthCookies = (response: Response) => {
-  const raw = response.headers.get("set-cookie") || "";
-  const token = raw.match(/token=([^;]+)/)?.[1];
-  const refreshToken = raw.match(/refreshToken=([^;]+)/)?.[1];
-
-  const parts = [];
-  if (token) {
-    parts.push(`token=${token}`);
-  }
-  if (refreshToken) {
-    parts.push(`refreshToken=${refreshToken}`);
-  }
-
-  return parts.join("; ");
-};
-
 let app: { handle: (request: Request) => Promise<Response> };
 let closeDatabase: () => Promise<void>;
 
-const callApi = (path: string, method: string, body?: Record<string, unknown>, cookies?: string) => {
+const normalizeToken = (token?: string) =>
+  token && token.toLowerCase().startsWith("bearer ") ? token.slice(7).trim() : token;
+
+const callApi = (path: string, method: string, body?: Record<string, unknown>, token?: string) => {
   const headers: Record<string, string> = {};
 
   if (body) {
     headers["content-type"] = "application/json";
   }
 
-  if (cookies) {
-    headers.cookie = cookies;
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
   }
 
   return app.handle(
@@ -84,6 +71,7 @@ beforeAll(async () => {
   await runMigration("../../migrations/20260207010100-create-users.js", queryInterface);
   await runMigration("../../migrations/20260207010200-create-refresh-tokens.js", queryInterface);
   await runMigration("../../migrations/20260208090000-add-deleted-to-users.js", queryInterface);
+  await runMigration("../../migrations/20260208120000-convert-ids-to-uuid.js", queryInterface);
 
   await runSeeder("../../seeders/20260207010300-seed-roles.js", queryInterface);
   await runSeeder("../../seeders/20260207010400-seed-admin-user.js", queryInterface);
@@ -113,10 +101,11 @@ describe("integration auth flow", () => {
     });
 
     expect(registerResponse.status).toBe(200);
-    const userCookies = parseAuthCookies(registerResponse);
-    expect(userCookies.length).toBeGreaterThan(0);
+    const registerPayload = await registerResponse.json();
+    const userToken = normalizeToken(registerPayload?.data?.token as string);
+    expect(userToken?.length).toBeGreaterThan(10);
 
-    const meResponse = await callApi("/api/v1/auth/me", "GET", undefined, userCookies);
+    const meResponse = await callApi("/api/v1/auth/me", "GET", undefined, userToken);
     expect(meResponse.status).toBe(200);
 
     const invalidLoginResponse = await callApi("/api/v1/auth/login", "POST", {
@@ -129,12 +118,15 @@ describe("integration auth flow", () => {
       password: "Admin12345!"
     });
     expect(adminLoginResponse.status).toBe(200);
-    const adminCookies = parseAuthCookies(adminLoginResponse);
+    const adminPayload = await adminLoginResponse.json();
+    const adminToken = normalizeToken(adminPayload?.data?.token as string);
+    const adminRefreshToken = adminPayload?.data?.refreshToken as string;
+    expect(adminToken?.length).toBeGreaterThan(10);
 
-    const usersResponse = await callApi("/api/v1/users?page=1&pageSize=5", "GET", undefined, adminCookies);
+    const usersResponse = await callApi("/api/v1/users?page=1&pageSize=5", "GET", undefined, adminToken);
     expect(usersResponse.status).toBe(200);
 
-    const refreshResponse = await callApi("/api/v1/auth/refresh", "POST", undefined, adminCookies);
+    const refreshResponse = await callApi("/api/v1/auth/refresh", "POST", { refreshToken: adminRefreshToken });
     expect(refreshResponse.status).toBe(200);
   });
 
@@ -144,7 +136,9 @@ describe("integration auth flow", () => {
       password: "Admin12345!"
     });
     expect(adminLoginResponse.status).toBe(200);
-    const adminCookies = parseAuthCookies(adminLoginResponse);
+    const adminPayload = await adminLoginResponse.json();
+    const adminToken = normalizeToken(adminPayload?.data?.token as string);
+    expect(adminToken?.length).toBeGreaterThan(10);
 
     const unique = Date.now();
     const createResponse = await callApi(
@@ -156,15 +150,15 @@ describe("integration auth flow", () => {
         password: "Password123!",
         role: "user"
       },
-      adminCookies
+      adminToken
     );
 
     expect(createResponse.status).toBe(200);
     const created = await createResponse.json();
-    const userId = created?.data?.id as number;
-    expect(userId).toBeGreaterThan(0);
+    const userId = created?.data?.id as string;
+    expect(userId).toMatch(/^[0-9a-fA-F-]{36}$/);
 
-    const getResponse = await callApi(`/api/v1/users/${userId}`, "GET", undefined, adminCookies);
+    const getResponse = await callApi(`/api/v1/users/${userId}`, "GET", undefined, adminToken);
     expect(getResponse.status).toBe(200);
 
     const updateResponse = await callApi(
@@ -174,14 +168,14 @@ describe("integration auth flow", () => {
         name: `User Updated ${unique}`,
         email: `user${unique}.updated@example.com`
       },
-      adminCookies
+      adminToken
     );
     expect(updateResponse.status).toBe(200);
 
-    const deleteResponse = await callApi(`/api/v1/users/${userId}`, "DELETE", undefined, adminCookies);
+    const deleteResponse = await callApi(`/api/v1/users/${userId}`, "DELETE", undefined, adminToken);
     expect(deleteResponse.status).toBe(200);
 
-    const getAfterDeleteResponse = await callApi(`/api/v1/users/${userId}`, "GET", undefined, adminCookies);
+    const getAfterDeleteResponse = await callApi(`/api/v1/users/${userId}`, "GET", undefined, adminToken);
     expect(getAfterDeleteResponse.status).toBe(404);
   });
 });

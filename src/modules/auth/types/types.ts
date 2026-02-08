@@ -37,14 +37,14 @@ export type AuthTokens = {
 };
 
 export type CreateUserPayload = {
-  roleId: number;
+  roleId: string;
   name: string;
   email: string;
   passwordHash: string;
 };
 
 export type CreateRefreshTokenPayload = {
-  userId: number;
+  userId: string;
   tokenId: string;
   tokenHash: string;
   expiresAt: Date;
